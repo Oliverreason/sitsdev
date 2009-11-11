@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<GameSettings>
+	<PreferredFullScreen>false</PreferredFullScreen>
+	<PreferredWindowWidth>1024</PreferredWindowWidth>
+	<PreferredWindowHeight>768</PreferredWindowHeight>
+	<EnableVsync>true</EnableVsync>
+	<KeyboardSettings>
+		<KeyboardSettings>
+			<A>S</A>
+			<B>A</B>
+			<X>W</X>
+			<Y>D</Y>
+			<LeftShoulder>LeftShift</LeftShoulder>
+			<RightShoulder>None</RightShoulder>
+			<LeftTrigger>None</LeftTrigger>
+			<RightTrigger>None</RightTrigger>
+			<LeftStick>Space</LeftStick>
+			<RightStick>None</RightStick>
+			<Back>Escape</Back>
+			<Start>Enter</Start>
+			<DPadDown>None</DPadDown>
+			<DPadLeft>None</DPadLeft>
+			<DPadRight>None</DPadRight>
+			<DPadUp>None</DPadUp>
+			<LeftThumbstickDown>Down</LeftThumbstickDown>
+			<LeftThumbstickLeft>Q</LeftThumbstickLeft>
+			<LeftThumbstickRight>E</LeftThumbstickRight>
+			<LeftThumbstickUp>Up</LeftThumbstickUp>
+			<RightThumbstickDown>None</RightThumbstickDown>
+			<RightThumbstickLeft>None</RightThumbstickLeft>
+			<RightThumbstickRight>None</RightThumbstickRight>
+			<RightThumbstickUp>None</RightThumbstickUp>
+		</KeyboardSettings>
+	</KeyboardSettings>
+</GameSettings>
