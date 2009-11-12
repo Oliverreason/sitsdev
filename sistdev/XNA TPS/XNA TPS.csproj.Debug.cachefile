@@ -5,6 +5,8 @@ Content\Models\EnemyBeast.xnb
 Content\Models\PlayerMarine.xnb
 Content\Models\WeaponMachineGun.xnb
 Content\Models\Skydome.xnb
+Content\Models\cube2.xnb
+Content\Models\cube3.xnb
 Content\Textures\alphaMap.xnb
 Content\Textures\rockbump.xnb
 Content\Textures\Skydome.xnb
@@ -17,10 +19,11 @@ Content\Textures\Terrain4.xnb
 Content\Textures\WeaponMachineGunDiffuse.xnb
 Content\Textures\weaponTarget.xnb
 Content\Terrain1.xnb
+Content\Textures\weaponTarget2.xnb
 Content\Textures\EnemyBeastDiffuse_0.xnb
 Content\Textures\PlayerMarineDiffuse_0.xnb
 Content\Textures\WeaponMachineGunDiffuse_0.xnb
-Content\Models\cube2.xnb
-Content\Models\cube3.xnb
-Content\Textures\weaponTarget2.xnb
+Content\Models\tor2.xnb
+Content\Models\tor1.xnb
+Content\Textures\firePos.xnb
 Content\Settings\GameSettings.xml

@@ -12,7 +12,7 @@ namespace XNA_TPS.GameLogic
         {
             Marine
         }
-        public static string[] PlayerModelFileName = { "PlayerMarine"/*/ "cube2"*/ };
+        public static string[] PlayerModelFileName = { "PlayerMarine" };
         public static int[] PlayerLife = { 100 };
         public static float[] PlayerSpeed = { 1.0f };
 

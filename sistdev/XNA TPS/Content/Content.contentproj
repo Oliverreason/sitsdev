@@ -97,6 +97,16 @@
       <Importer>XImporter</Importer>
       <Processor>ModelProcessor</Processor>
     </Compile>
+    <Compile Include="Models\tor1.x">
+      <Name>tor1</Name>
+      <Importer>XImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+    <Compile Include="Models\tor2.FBX">
+      <Name>tor2</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
     <None Include="Settings\GameSettings.xml">
       <Name>GameSettings</Name>
       <Importer>XmlImporter</Importer>
@@ -195,6 +205,13 @@
   <ItemGroup>
     <Compile Include="Textures\weaponTarget2.png">
       <Name>weaponTarget2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Textures\firePos.png">
+      <Name>firePos</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
