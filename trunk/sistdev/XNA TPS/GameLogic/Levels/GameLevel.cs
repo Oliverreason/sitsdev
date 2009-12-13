@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using XNA_TPS.GameBase.Cameras;
-using XNA_TPS.GameBase.Lights;
-using XNA_TPS.GameBase.Shapes;
+using sistdev.GameBase.Cameras;
+using sistdev.GameBase.Lights;
+using sistdev.GameBase.Shapes;
+using sistdev.GameLogic;
 
-namespace XNA_TPS.GameLogic.Levels
+namespace sistdev.GameLogic.Levels
 {
     public struct GameLevel
     {
@@ -19,5 +20,9 @@ namespace XNA_TPS.GameLogic.Levels
         // Player and enemies
         public Player Player;
         public List<Enemy> EnemyList;
+        public List<Mosquito> MosquitoList;
+        public List<StaticUnit> StaticUnitList;
+        
+        public List<Bounding2D> Bound2D;
     }
 }

@@ -7,13 +7,13 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 
-using XNA_TPS.GameBase.Cameras;
-using XNA_TPS.GameBase.Effects;
-using XNA_TPS.Helpers;
-using XNA_TPS.GameBase.Lights;
-using XNA_TPS.GameBase.Materials;
+using sistdev.GameBase.Cameras;
+using sistdev.GameBase.Effects;
+using sistdev.Helpers;
+using sistdev.GameBase.Lights;
+using sistdev.GameBase.Materials;
 
-namespace XNA_TPS.GameBase.Shapes
+namespace sistdev.GameBase.Shapes
 {
     public class Terrain : DrawableGameComponent
     {

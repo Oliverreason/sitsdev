@@ -5,10 +5,10 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-using XNA_TPS.GameBase.Cameras;
-using XNA_TPS.GameBase.Materials;
+using sistdev.GameBase.Cameras;
+using sistdev.GameBase.Materials;
 
-namespace XNA_TPS.GameBase.Shapes
+namespace sistdev.GameBase.Shapes
 {
     public class SkyDome : DrawableGameComponent
     {

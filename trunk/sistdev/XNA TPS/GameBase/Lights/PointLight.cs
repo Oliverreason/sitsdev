@@ -4,7 +4,7 @@ using System.Text;
 
 using Microsoft.Xna.Framework;
 
-namespace XNA_TPS.GameBase.Lights
+namespace sistdev.GameBase.Lights
 {
     public class PointLight : BaseLight
     {
