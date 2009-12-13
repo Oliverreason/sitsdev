@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace XNA_TPS.GameBase.Cameras
+namespace sistdev.GameBase.Cameras
 {
     public class CameraManager
     {

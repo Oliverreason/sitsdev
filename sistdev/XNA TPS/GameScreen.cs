@@ -9,14 +9,14 @@ using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 using Microsoft.DirectX.PrivateImplementationDetails;
 
-using XNA_TPS.GameBase.Cameras;
-using XNA_TPS.GameBase.Lights;
-using XNA_TPS.GameBase.Shapes;
-using XNA_TPS.GameLogic;
-using XNA_TPS.GameLogic.Levels;
-using XNA_TPS.Helpers;
+using sistdev.GameBase.Cameras;
+using sistdev.GameBase.Lights;
+using sistdev.GameBase.Shapes;
+using sistdev.GameLogic;
+using sistdev.GameLogic.Levels;
+using sistdev.Helpers;
 
-namespace XNA_TPS
+namespace sistdev
 {
     public class GameScreen : DrawableGameComponent
     {
@@ -32,6 +32,7 @@ namespace XNA_TPS
         Texture2D weaponTargetTexture;
         Texture2D weaponTargetTexture2;
         Texture2D firePosTexture;
+        Texture2D healthBar;
         Vector3 weaponTargetPosition;
         Vector3 cursorPosition;
         Vector3 cursorLastPosition;
@@ -39,6 +40,7 @@ namespace XNA_TPS
         // Aimed enemy
         Enemy aimEnemy;
         int numEnemiesAlive;
+        int numMosquitosAlive;
 
         // Frame counter helper
         FrameCounterHelper frameCounter;
@@ -50,6 +52,7 @@ namespace XNA_TPS
         Vector2 XYCurs;
 
         Vector3 firePos;
+        Vector3 firePos2;
 
         public GameScreen(Game game, LevelCreator.Levels currentLevel)
             : base(game)
@@ -63,9 +66,10 @@ namespace XNA_TPS
             frameCounter = new FrameCounterHelper(Game);
 
             XYCurs = new Vector2(200, 200);
-            firePos = Vector3.Zero;
-            resolution.X = 1024;
-            resolution.Y = 768;
+            firePos  = Vector3.Zero;
+            firePos2 = Vector3.Zero;
+            resolution.X = 800;
+            resolution.Y = 600;
             cursorPosition.X = resolution.X / 2;
             cursorPosition.Y = resolution.Y / 2;
             cursorPosition.Z = 0;
@@ -91,13 +95,18 @@ namespace XNA_TPS
             weaponTargetTexture = Game.Content.Load<Texture2D>(GameAssetsPath.TEXTURES_PATH +
                 "weaponTarget");
 
-            // Weapon target
+            // Weapon target 2
             weaponTargetTexture2 = Game.Content.Load<Texture2D>(GameAssetsPath.TEXTURES_PATH +
                 "weaponTarget2");
             
-            // Weapon target
+            // Weapon target 3
             firePosTexture = Game.Content.Load<Texture2D>(GameAssetsPath.TEXTURES_PATH +
                 "firePos");
+
+            // Health Bar
+            healthBar = Game.Content.Load<Texture2D>(GameAssetsPath.TEXTURES_PATH +
+                "healthBar");
+
             // Load game level
             gameLevel = LevelCreator.CreateLevel(Game, currentLevel);
 
@@ -186,7 +195,7 @@ namespace XNA_TPS
                 
 
                 // Shoot
-                if (/*inputHelper.IsKeyJustPressed(Buttons.A)*/(inputHelper.GetMouseState().LeftButton == ButtonState.Pressed) && player.Weapon.BulletsCount > 0)
+                /*if ((inputHelper.GetMouseState().LeftButton == ButtonState.Pressed) )
                 {
                     // Wait the last shoot animation finish
                     if (player.AnimatedModel.IsAnimationFinished)
@@ -194,11 +203,10 @@ namespace XNA_TPS
                         player.SetAnimation(Player.PlayerAnimations.Shoot, true, false, false);
 
                         // Damage the enemy
-                        player.Weapon.BulletsCount--;
                         if (aimEnemy != null)
-                            aimEnemy.ReceiveDamage(player.Weapon.BulletDamage);
+                            aimEnemy.ReceiveDamage(0);
                     }
-                }
+                }*/
             }
             // Normal Mode
             else
@@ -317,7 +325,7 @@ namespace XNA_TPS
                 }
 
                 // Shoot
-                if (!(playerStrafing || playerRuning) && (inputHelper.GetMouseState().LeftButton == ButtonState.Pressed) && player.Weapon.BulletsCount > 0)
+                /*if (!(playerStrafing || playerRuning) && (inputHelper.GetMouseState().LeftButton == ButtonState.Pressed) )
                 {
                     //player.SetAnimation(Player.PlayerAnimations.Aim, false, false, false);
                     player.SetAnimation(Player.PlayerAnimations.Shoot, true, false, false);
@@ -329,13 +337,12 @@ namespace XNA_TPS
                         player.SetAnimation(Player.PlayerAnimations.Shoot, true, false, false);
                         
                         // Damage the enemy
-                        player.Weapon.BulletsCount--;
                         if (aimEnemy != null)
                         {
-                            aimEnemy.ReceiveDamage(player.Weapon.BulletDamage);
+                            aimEnemy.ReceiveDamage(0);
                         }
                     }
-                }
+                }*/
 
                 if (isPlayerIdle)
                     player.SetAnimation(Player.PlayerAnimations.Idle, false, true, false);
@@ -345,22 +352,47 @@ namespace XNA_TPS
         private void UpdateWeaponTarget()
         {
             aimEnemy = null;
-            numEnemiesAlive = 0;
+            //numEnemiesAlive = 0;
+
+            /*Vector3 fp;
 
             ThirdPersonCamera cam = gameLevel.CameraManager.ActiveCamera as ThirdPersonCamera;
-            Vector3 proj = GraphicsDevice.Viewport.Unproject(cursorPosition, cam.Projection, cam.View, Matrix.CreateTranslation(0, 0, 0));
+            Vector3 cursorPositionNorm = cursorPosition;// -(new Vector3(500, 0, 390));
+            cursorPositionNorm.Normalize();
+            cursorPositionNorm.X = 0;
+            cursorPositionNorm.Y = 0;
+            cursorPositionNorm.Z = 0;
+            Vector3 proj = GraphicsDevice.Viewport.Unproject(cursorPositionNorm, cam.Projection, cam.View, Matrix.CreateTranslation(0, 0, 0));
             
+            Vector3 plh = gameLevel.Player.Weapon.TargetDirection;// gameLevel.Player.HeadingVector;
+            Vector3 vec = Vector3.Transform(plh,
+                Matrix.CreateFromAxisAngle(plh, MathHelper.ToRadians(0)) *
+                Matrix.CreateFromAxisAngle(gameLevel.Player.UpVector, MathHelper.ToRadians(-10)) *
+                Matrix.CreateFromAxisAngle(gameLevel.Player.StrafeVector, MathHelper.ToRadians(0)));
+
+            vec = proj + cam.HeadingVector;
+            fp = proj + (new Vector3(0,0,0));
+            //vec = gameLevel.Player.HeadingVector;
+            //Vector3 vec = Vector3.Transform(gameLevel.Player.HeadingVector,
+              //  Matrix.CreateFromAxisAngle(Vector3.UnitY, (float)Math.Acos((2 - (new Vector3(cursorPositionNorm, 0, cursorPositionNorm.)).LengthSquared()) / 2)));
+            //vec.Normalize();
             // Shoot ray
             Ray ray = new Ray(gameLevel.Player.Weapon.FirePosition, gameLevel.Player.Weapon.TargetDirection);
-            Ray ray2 = new Ray(proj, cam.HeadingVector);
+            Ray ray2 = new Ray(fp, vec);
+            //Ray ray3 = new Ray(proj, cam.HeadingVector);
             
             // Distance from the ray start position to the terrain
             float? distance = gameLevel.Terrain.Intersects(ray);
             float? distance2 = gameLevel.Terrain.Intersects(ray2);
 
             if (distance != null)
-            firePos = gameLevel.Player.Weapon.FirePosition +
-                gameLevel.Player.Weapon.TargetDirection * (float)distance;
+                firePos = gameLevel.Player.Weapon.FirePosition +
+                    gameLevel.Player.Weapon.TargetDirection * (float)distance;
+
+            if (distance2 != null)
+                firePos2 = fp +
+                    vec * (float)distance2;
+
             // Test intersection with enemies
             foreach (Enemy enemy in gameLevel.EnemyList)
             {
@@ -390,23 +422,36 @@ namespace XNA_TPS
                 if (distance != null)
                 firePos = gameLevel.Player.Weapon.FirePosition +
                     gameLevel.Player.Weapon.TargetDirection * (float)distance;
+
+                if (distance2 != null)
+                    firePos2 = fp +
+                        vec * (float)distance2;
             }
 
+            //firePos2 = GraphicsDevice.Viewport.Unproject(cursorPosition, cam.Projection, cam.View, Matrix.CreateTranslation(0, 0, 0));
+            //firePos2 = GraphicsDevice.Viewport.Project(firePos2, cam.Projection, cam.View, Matrix.CreateTranslation(0, 0, 0));
             // Weapon target position
             weaponTargetPosition = gameLevel.Player.Weapon.FirePosition +
-                gameLevel.Player.Weapon.TargetDirection * 300;
+                gameLevel.Player.Weapon.TargetDirection * 300;*/
         }
 
         public override void Update(GameTime gameTime)
         {
             // Restart game
             if (gameLevel.Player.IsDead || numEnemiesAlive == 0)
+            {
+                //Game.Exit();
                 gameLevel = LevelCreator.CreateLevel(Game, currentLevel);
+                numEnemiesAlive = gameLevel.EnemyList.Count;
+                numMosquitosAlive = gameLevel.MosquitoList.Count;
+            }
 
             UpdateInput();
 
             // Update player
+            gameLevel.Player.Update2DCollision(gameLevel.Bound2D);
             gameLevel.Player.Update(gameTime);
+
             UpdateWeaponTarget();
 
             // Update camera
@@ -423,9 +468,29 @@ namespace XNA_TPS
                 if (enemy.BoundingSphere.Intersects(activeCamera.Frustum) ||
                     enemy.State == Enemy.EnemyState.ChasePlayer ||
                     enemy.State == Enemy.EnemyState.AttackPlayer)
-
+                {
+                    enemy.Update2DCollision(gameLevel.Bound2D);
                     enemy.Update(gameTime);
+                }
+            }
 
+            // Update mosquito
+            foreach (Mosquito mosquito in gameLevel.MosquitoList)
+            {
+                if (mosquito.BoundingSphere.Intersects(activeCamera.Frustum))
+                {
+                    mosquito.Update2DCollision(gameLevel.Bound2D);
+                    mosquito.Update(gameTime);
+                }
+            }
+
+            // Update stat units
+            foreach (StaticUnit statUnit in gameLevel.StaticUnitList)
+            {
+                if (statUnit.BoundingSphere.Intersects(activeCamera.Frustum))
+                {
+                    statUnit.Update(gameTime);
+                }
             }
 
             // Update scene objects
@@ -452,11 +517,27 @@ namespace XNA_TPS
                     enemy.Draw(gameTime);
             }
 
+            // Draw mosquitos
+            foreach (Mosquito mosquito in gameLevel.MosquitoList)
+            {
+                if (mosquito.BoundingSphere.Intersects(activeCamera.Frustum))
+                    mosquito.Draw(gameTime);
+            }
+
+            // Draw static units
+            foreach (StaticUnit statUnit in gameLevel.StaticUnitList)
+            {
+                if (statUnit.BoundingSphere.Intersects(activeCamera.Frustum))
+                {
+                    statUnit.Draw(gameTime);
+                }
+            }
+
             spriteBatch.Begin(SpriteBlendMode.AlphaBlend, SpriteSortMode.Deferred, SaveStateMode.SaveState);
 
             // Project weapon target
-            weaponTargetPosition = GraphicsDevice.Viewport.Project(weaponTargetPosition,
-                activeCamera.Projection, activeCamera.View, Matrix.Identity);
+            //weaponTargetPosition = GraphicsDevice.Viewport.Project(weaponTargetPosition,
+            //    activeCamera.Projection, activeCamera.View, Matrix.Identity);
             
             // Draw weapon target
             int weaponRectangleSize = GraphicsDevice.Viewport.Width / 40;
@@ -476,40 +557,57 @@ namespace XNA_TPS
                         weaponRectangleSize, weaponRectangleSize),
                         (aimEnemy == null) ? Color.White : Color.Red);
 
-                spriteBatch.Draw(weaponTargetTexture2, new Rectangle(
-                        (int)(weaponTargetPosition.X - weaponRectangleSize * 0.5f),
-                        (int)(weaponTargetPosition.Y - weaponRectangleSize * 0.5f),
-                        weaponRectangleSize, weaponRectangleSize),
-                        (aimEnemy == null) ? Color.White : Color.Red);
+                //spriteBatch.Draw(weaponTargetTexture2, new Rectangle(
+                //     (int)(weaponTargetPosition.X - weaponRectangleSize * 0.5f),
+                //      (int)(weaponTargetPosition.Y - weaponRectangleSize * 0.5f),
+                //       weaponRectangleSize, weaponRectangleSize),
+                //       (aimEnemy == null) ? Color.White : Color.Red);
             }
 
-            // Draw GUI text
-            spriteBatch.DrawString(spriteFont, "Health: " + gameLevel.Player.Life + "/" +
-                gameLevel.Player.MaxLife, new Vector2(10, 5), Color.Green);
-            spriteBatch.DrawString(spriteFont, "Bullets: " + gameLevel.Player.Weapon.BulletsCount + "/" +
-                gameLevel.Player.Weapon.MaxBullets, new Vector2(10, 25), Color.Green);
-            spriteBatch.DrawString(spriteFont, "Enemies Alive: " + numEnemiesAlive + "/" +
-                gameLevel.EnemyList.Count, new Vector2(10, 45), Color.Green);
+            // Draw Player Health
+            spriteBatch.DrawString(spriteFont, "Health: ", new Vector2(10, 5), Color.Green);
+
+            for (Int32 i = 0; i < gameLevel.Player.Life / (gameLevel.Player.MaxLife / 20); i++)
+            {
+                spriteBatch.Draw(healthBar, new Vector2(
+                        120+i*10,
+                        10),
+                        (gameLevel.Player.Life >= gameLevel.Player.MaxLife/2)?Color.Green:Color.Red);
+            }
+
+                // Draw GUI text
+                /*spriteBatch.DrawString(spriteFont, "Health: " + gameLevel.Player.Life + "/" +
+                    gameLevel.Player.MaxLife, new Vector2(10, 5), Color.Green);*/
+                //spriteBatch.DrawString(spriteFont, "Bullets: " + gameLevel.Player.Weapon.BulletsCount + "/" +
+                //    gameLevel.Player.Weapon.MaxBullets, new Vector2(10, 25), Color.Green);
+                spriteBatch.DrawString(spriteFont, "Beasts: " + numEnemiesAlive + "/" +
+                    gameLevel.EnemyList.Count, new Vector2(10, 35), Color.Green);
+
+                spriteBatch.DrawString(spriteFont, "Beasts: " + numMosquitosAlive + "/" +
+                        gameLevel.MosquitoList.Count, new Vector2(10, 55), Color.Green);
+
+                //spriteBatch.DrawString(spriteFont, "Trees: " + gameLevel.StaticUnitList.Count, 
+                //    new Vector2(110, 35), Color.Green);
             
 
             spriteBatch.DrawString(spriteFont, "FPS: " + frameCounter.LastFrameFps, new Vector2(10, 75),
                 Color.Red);
 
-            spriteBatch.DrawString(spriteFont, "Cursor: " + cursorPosition.X + ":" + cursorPosition.Y, new Vector2(10, 105),
+            /*spriteBatch.DrawString(spriteFont, "Cursor: " + cursorPosition.X + ":" + cursorPosition.Y, new Vector2(10, 105),
                 Color.Red);
 
             /*spriteBatch.DrawString(spriteFont, "Mouse: " + inputHelper.GetMouseState().X + ":" + inputHelper.GetMouseState().Y, new Vector2(10, 125),
-                Color.Red);*/
+                Color.Red);
 
             spriteBatch.DrawString(spriteFont, "Weapon pos: " + gameLevel.Player.Weapon.FirePosition.X + "  " +
                                                             gameLevel.Player.Weapon.FirePosition.Y + "  " +
                                                             gameLevel.Player.Weapon.FirePosition.Z, new Vector2(10, 165),
-                Color.Red);
+                Color.Red);*/
 
-            spriteBatch.DrawString(spriteFont, "Weapon TD: " + gameLevel.Player.Weapon.TargetDirection.X + "  " + 
+            /*spriteBatch.DrawString(spriteFont, "Weapon TD: " + gameLevel.Player.Weapon.TargetDirection.X + "  " + 
                                                                gameLevel.Player.Weapon.TargetDirection.Y + "  " +
                                                                gameLevel.Player.Weapon.TargetDirection.Z, new Vector2(10, 185),
-                Color.Red);
+                Color.Red);*/
 
 
             /*Vector3 MyTD = gameLevel.Player.Weapon.TargetDirection + 
@@ -517,22 +615,23 @@ namespace XNA_TPS
                             0, 
                             cursorPosition.Y - 390);*/
 
-            Vector3 curPosNorm = cursorPosition-(new Vector3(500, 390, 0));
+            /*Vector3 curPosNorm = cursorPosition-(new Vector3(500, 390, 0));
             //if (curPosNorm != Vector3.Zero) curPosNorm.Normalize();
             spriteBatch.DrawString(spriteFont, "curPosNorm: " + curPosNorm, new Vector2(10, 305), Color.Red);
             double x = curPosNorm.LengthSquared();
-            x = Math.Acos((double)(2-x)/2);
+            x = Math.Acos((double)(2-x)/2);*/
             
             ThirdPersonCamera cam = gameLevel.CameraManager.ActiveCamera as ThirdPersonCamera;
             Vector3 proj = GraphicsDevice.Viewport.Unproject(cursorPosition, cam.Projection, cam.View, Matrix.CreateTranslation(0, 0, 0));
 
             Vector3 MyTD = proj;//Vector3.Transform(gameLevel.Player.HeadingVector, Matrix.CreateFromAxisAngle(Vector3.UnitY, (float)x));
             //MyTD.Normalize();
-            spriteBatch.DrawString(spriteFont, "My TD    : " + MyTD.X + "  " +
+            /*spriteBatch.DrawString(spriteFont, "My TD    : " + MyTD.X + "  " +
                                                                MyTD.Y + "  " +
                                                                MyTD.Z, new Vector2(10, 205),
-                Color.Red);
-            MyTD.Normalize();
+                Color.Red);*/
+            
+            /*MyTD.Normalize();
             spriteBatch.DrawString(spriteFont, "TD Norm  : " + MyTD.X + "  " +
                                                                MyTD.Y + "  " +
                                                                MyTD.Z, new Vector2(10, 265),
@@ -554,13 +653,72 @@ namespace XNA_TPS
                 Color.Red);
 
             spriteBatch.DrawString(spriteFont, "Anim: " + gameLevel.Player.AnimatedModel.IsAnimationFinished, new Vector2(10, 325),
-                Color.Red);
+                Color.Red);*/
 
-            spriteBatch.DrawString(spriteFont, "Fire Pos : " + firePos.X + "  " +
+            /*spriteBatch.DrawString(spriteFont, "Fire Pos  : " + firePos.X + "  " +
                                                                firePos.Y + "  " +
                                                                firePos.Z, new Vector2(10, 285),
                 Color.Red);
-            
+
+            spriteBatch.DrawString(spriteFont, "Fire Pos2 : " + firePos2.X + "  " +
+                                                                firePos2.Y + "  " +
+                                                                firePos2.Z, new Vector2(10, 305),
+                Color.Red);
+            */
+            //Vector3 toE = GraphicsDevice.Viewport.Project(firePos2, cam.Projection, cam.View, Matrix.CreateTranslation(0, 0, 0));
+
+            /*spriteBatch.DrawString(spriteFont, "Fire Pos3 : " + toE.X + "  " +
+                                                                toE.Y + "  " +
+                                                                toE.Z, new Vector2(10, 325),
+                Color.Red);*/
+
+            /*spriteBatch.Draw(firePosTexture, new Rectangle(
+                        (int)(toE.X - weaponRectangleSize * 0.5f),
+                        (int)(toE.Y - weaponRectangleSize * 0.5f),
+                        weaponRectangleSize, weaponRectangleSize),
+                        Color.White);
+
+            Vector3 cursorPositionNorm = cursorPosition - (new Vector3(500, 0, 390));
+            cursorPositionNorm.Normalize();
+            spriteBatch.DrawString(spriteFont, "Alpha : " + (float)180 / Math.PI*Math.Acos((2 - cursorPositionNorm.LengthSquared()) / 2), new Vector2(10, 345),
+                Color.Red);*/
+
+            spriteBatch.DrawString(spriteFont, "Rotation : " + gameLevel.Player.Transformation.Rotate.X + "  " +
+                                                               gameLevel.Player.Transformation.Rotate.Y + "  " +
+                                                               gameLevel.Player.Transformation.Rotate.Z, new Vector2(10, 110),
+                                                               Color.Red);
+
+            spriteBatch.DrawString(spriteFont, "Translate : " + gameLevel.Player.Transformation.Translate.X + "  " +
+                                                                gameLevel.Player.Transformation.Translate.Y + "  " +
+                                                                gameLevel.Player.Transformation.Translate.Z, new Vector2(10, 130),
+                Color.Red);
+
+            /*spriteBatch.DrawString(spriteFont, "Scale : " + gameLevel.Player.Transformation.Scale.X + "  " +
+                                                            gameLevel.Player.Transformation.Scale.Y + "  " +
+                                                            gameLevel.Player.Transformation.Scale.Z, new Vector2(10, 150),
+                Color.Red);
+
+            spriteBatch.DrawString(spriteFont, "BS Centr : " + gameLevel.Player.BoundingSphere.Center.X + "  " +
+                                                               gameLevel.Player.BoundingSphere.Center.Y + "  " +
+                                                               gameLevel.Player.BoundingSphere.Center.Z, new Vector2(10, 180),
+                Color.Red);
+
+            spriteBatch.DrawString(spriteFont, "BS Box Min : " + gameLevel.Player.BoundingBox.Min.X + "  " +
+                                                                 gameLevel.Player.BoundingBox.Min.Y + "  " +
+                                                                 gameLevel.Player.BoundingBox.Min.Z, new Vector2(10, 210),
+                Color.Red);
+
+            spriteBatch.DrawString(spriteFont, "BS Box Max : " + gameLevel.Player.BoundingBox.Max.X + "  " +
+                                                                 gameLevel.Player.BoundingBox.Max.Y + "  " +
+                                                                 gameLevel.Player.BoundingBox.Max.Z, new Vector2(10, 230),
+                Color.Red);
+
+            */
+            /*spriteBatch.DrawString(spriteFont, "Position : " + gameLevel.Player.X + "  " +
+                                                               gameLevel.Player.Transformation.Scale.Y + "  " +
+                                                               gameLevel.Player.Transformation.Scale.Z, new Vector2(10, 210),
+                Color.Red);*/
+
             spriteBatch.End();
 
             base.Draw(gameTime);

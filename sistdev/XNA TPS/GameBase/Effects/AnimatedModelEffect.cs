@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace XNA_TPS.GameBase.Effects
+namespace sistdev.GameBase.Effects
 {
     public class AnimatedModelEffect
     {

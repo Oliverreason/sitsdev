@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace XNA_TPS.Helpers
+namespace sistdev.Helpers
 {
     [Serializable]
     public struct KeyboardSettings

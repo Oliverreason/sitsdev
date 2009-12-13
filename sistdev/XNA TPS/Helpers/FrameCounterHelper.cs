@@ -4,7 +4,7 @@ using System.Text;
 
 using Microsoft.Xna.Framework;
 
-namespace XNA_TPS.Helpers
+namespace sistdev.Helpers
 {
     public class FrameCounterHelper : GameComponent
     {

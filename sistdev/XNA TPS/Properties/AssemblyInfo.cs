@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("XNA_TPS")]
-[assembly: AssemblyProduct("XNA_TPS")]
+[assembly: AssemblyTitle("sistdev")]
+[assembly: AssemblyProduct("sistdev")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyCompany("")]
 

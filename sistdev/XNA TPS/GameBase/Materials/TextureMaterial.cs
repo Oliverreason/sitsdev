@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace XNA_TPS.GameBase.Materials
+namespace sistdev.GameBase.Materials
 {
     public class TextureMaterial
     {

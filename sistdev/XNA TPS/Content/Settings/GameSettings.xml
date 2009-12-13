@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <GameSettings>
 	<PreferredFullScreen>false</PreferredFullScreen>
-	<PreferredWindowWidth>1024</PreferredWindowWidth>
-	<PreferredWindowHeight>768</PreferredWindowHeight>
+	<PreferredWindowWidth>800</PreferredWindowWidth>
+	<PreferredWindowHeight>600</PreferredWindowHeight>
 	<EnableVsync>true</EnableVsync>
 	<KeyboardSettings>
 		<KeyboardSettings>

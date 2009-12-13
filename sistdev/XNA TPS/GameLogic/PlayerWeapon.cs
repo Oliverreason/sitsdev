@@ -4,11 +4,11 @@ using System.Text;
 
 using Microsoft.Xna.Framework;
 
-using XNA_TPS.GameBase.Shapes;
-using XNA_TPS.GameBase;
-using XNA_TPS.GameLogic;
+using sistdev.GameBase.Shapes;
+using sistdev.GameBase;
+using sistdev.GameLogic;
 
-namespace XNA_TPS.GameLogic
+namespace sistdev.GameLogic
 {
     public class PlayerWeapon : DrawableGameComponent
     {

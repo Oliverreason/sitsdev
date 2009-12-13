@@ -1,6 +1,6 @@
 using System;
 
-namespace XNA_TPS
+namespace sistdev
 {
     static class Program
     {

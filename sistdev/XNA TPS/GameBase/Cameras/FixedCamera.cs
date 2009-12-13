@@ -4,7 +4,7 @@ using System.Text;
 
 using Microsoft.Xna.Framework;
 
-namespace XNA_TPS.GameBase.Cameras
+namespace sistdev.GameBase.Cameras
 {
     public class FixedCamera : BaseCamera
     {

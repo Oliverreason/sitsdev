@@ -4,7 +4,7 @@ using System.Text;
 
 using Microsoft.Xna.Framework;
 
-namespace XNA_TPS.GameBase
+namespace sistdev.GameBase
 {
     public class Transformation
     {

@@ -4,10 +4,10 @@ using System.Text;
 
 using Microsoft.Xna.Framework;
 
-using XNA_TPS.GameBase;
-using XNA_TPS.Helpers;
+using sistdev.GameBase;
+using sistdev.Helpers;
 
-namespace XNA_TPS.GameLogic
+namespace sistdev.GameLogic
 {
     public class Enemy : TerrainUnit
     {
@@ -157,6 +157,9 @@ namespace XNA_TPS.GameLogic
 
         private void Move(Vector3 direction)
         {
+            //Transformation.Scale *= Transformation.Scale * (float)2;
+            //Transformation.Translate = Transformation.Translate + (new Vector3(0,200,0));
+            //Transformation.Scale = (new Vector3(5, 5, 5));// *Transformation.Scale;
             return;
             SetAnimation(EnemyAnimations.Run, false, true, (CurrentAnimation == EnemyAnimations.TakeDamage));
             LinearVelocity = direction * LINEAR_VELOCITY_CONSTANT;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 
-namespace XNA_TPS
+namespace sistdev
 {
     public static class GameAssetsPath
     {

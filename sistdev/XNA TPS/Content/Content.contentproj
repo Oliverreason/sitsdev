@@ -80,32 +80,10 @@
       <ProcessorParameters_Scale>1600</ProcessorParameters_Scale>
       <ProcessorParameters_RotationX>-90</ProcessorParameters_RotationX>
     </Compile>
-    <Compile Include="Models\WeaponMachineGun.fbx">
-      <Name>WeaponMachineGun</Name>
+    <Compile Include="Models\funky_old.fbx">
+      <Name>funky_old</Name>
       <Importer>FbxImporter</Importer>
       <Processor>AnimatedModelProcessor</Processor>
-      <ProcessorParameters_Scale>4</ProcessorParameters_Scale>
-      <ProcessorParameters_RotationY>180</ProcessorParameters_RotationY>
-    </Compile>
-    <Compile Include="Models\cube2.X">
-      <Name>cube2</Name>
-      <Importer>XImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-    </Compile>
-    <Compile Include="Models\cube3.X">
-      <Name>cube3</Name>
-      <Importer>XImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-    </Compile>
-    <Compile Include="Models\tor1.x">
-      <Name>tor1</Name>
-      <Importer>XImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-    </Compile>
-    <Compile Include="Models\tor2.FBX">
-      <Name>tor2</Name>
-      <Importer>FbxImporter</Importer>
-      <Processor>ModelProcessor</Processor>
     </Compile>
     <None Include="Settings\GameSettings.xml">
       <Name>GameSettings</Name>
@@ -212,6 +190,13 @@
   <ItemGroup>
     <Compile Include="Textures\firePos.png">
       <Name>firePos</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Textures\healthBar.png">
+      <Name>healthBar</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

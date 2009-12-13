@@ -1,14 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Forms;
 
 using Microsoft.Xna.Framework;
 
-using XNA_TPS.GameBase;
-using XNA_TPS.GameBase.Cameras;
-using XNA_TPS.GameBase.Shapes;
 
-namespace XNA_TPS.GameLogic
+using sistdev.GameBase;
+using sistdev.GameBase.Cameras;
+using sistdev.GameBase.Shapes;
+using sistdev.GameLogic.Levels;
+
+
+namespace sistdev.GameLogic
 {
     public class TerrainUnit : DrawableGameComponent
     {
@@ -40,6 +44,8 @@ namespace XNA_TPS.GameLogic
         // Necessary services
         protected CameraManager cameraManager;
         protected Terrain terrain;
+        //protected List<Bounding2D> bound2DList;
+        //protected GameLevel gameLevel;
 
         #region Properties
         public int Life
@@ -170,6 +176,21 @@ namespace XNA_TPS.GameLogic
                 NormalizeBaseVectors();
             }
         }
+        public virtual Transformation TransformationOld
+        {
+            get
+            {
+                return animatedModel.TransformationOld;
+            }
+            set
+            {
+                animatedModel.TransformationOld = value;
+
+                // Upate
+                UpdateHeight(0);
+                NormalizeBaseVectors();
+            }
+        }
 
         public BoundingBox BoundingBox
         {
@@ -240,6 +261,7 @@ namespace XNA_TPS.GameLogic
         {
             cameraManager = Game.Services.GetService(typeof(CameraManager)) as CameraManager;
             terrain = Game.Services.GetService(typeof(Terrain)) as Terrain;
+            //gameLevel = Game.Services.GetService(typeof(GameLevel)) as GameLevel;
 
             base.Initialize();
         }
@@ -270,6 +292,8 @@ namespace XNA_TPS.GameLogic
 
         public override void Update(GameTime time)
         {
+            //TransformationOld = Transformation;
+
             float elapsedTimeSeconds = (float)time.ElapsedGameTime.TotalSeconds;
             animatedModel.Update(time, Matrix.Identity);
 
@@ -348,12 +372,60 @@ namespace XNA_TPS.GameLogic
             else
             {
                 isOnTerrain = false;
+                Console.WriteLine("Gravity={0}", gravityVelocity);
                 // Gravity
                 if (gravityVelocity > MIN_GRAVITY)
                     gravityVelocity -= GRAVITY_ACCELERATION * elapsedTimeSeconds;
                 newPosition.Y = Math.Max(terrainHeight, Transformation.Translate.Y + gravityVelocity);
             }
             Transformation.Translate = newPosition;
+        }
+
+        public void Update2DCollision(List<Bounding2D> bound2DList)
+        {
+            Vector3 linVel = linearVelocity;
+            linVel.Normalize();
+
+            foreach (Bounding2D bound2D in bound2DList)
+            {
+                Double chk2DCollision = Check2DCollision(bound2D);
+                if (chk2DCollision > 0)
+                {
+                    Console.WriteLine("Collision");
+                    Transformation.Translate -= linVel * (float)chk2DCollision;
+                    linearVelocity = Vector3.Zero;
+                }
+            }
+        }
+
+        public Double Check2DCollision(Bounding2D bound2D)
+        {
+            Double diffRXY = new Double();
+
+            switch (bound2D.Type)
+            {
+                case 0:
+                    diffRXY = Math.Pow(bound2D.Radius, 2) - (Math.Pow(Transformation.Translate.X - bound2D.X, 2) + Math.Pow(Transformation.Translate.Z - bound2D.Z, 2));
+                    if (diffRXY > 0)
+                    {
+                        return Math.Sqrt(diffRXY);
+                    }
+                    break;
+                case 1:
+                    if ((Transformation.Translate.X > (bound2D.X - bound2D.Height)) &&
+                         (Transformation.Translate.X < (bound2D.X + bound2D.Height)) &&
+                         (Transformation.Translate.Z > (bound2D.Z - bound2D.Width)) &&
+                         (Transformation.Translate.Z < (bound2D.Z + bound2D.Width)))
+                    {
+                        Console.WriteLine("Box collision!!!");
+                        return 1;
+                    }
+                    break;
+                default:
+                    return -1;
+            }
+
+            return -1;
         }
 
         public override void Draw(GameTime time)

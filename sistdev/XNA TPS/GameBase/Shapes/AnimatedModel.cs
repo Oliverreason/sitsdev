@@ -5,20 +5,21 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-using XNA_TPS.GameBase.Cameras;
-using XNA_TPS.GameBase.Effects;
-using XNA_TPS.GameBase.Lights;
-using XNA_TPS.GameBase.Materials;
+using sistdev.GameBase.Cameras;
+using sistdev.GameBase.Effects;
+using sistdev.GameBase.Lights;
+using sistdev.GameBase.Materials;
 
 using AnimatedModelContent;
 
-namespace XNA_TPS.GameBase.Shapes
+namespace sistdev.GameBase.Shapes
 {
     public class AnimatedModel : DrawableGameComponent
     {
         Model model;
         AnimatedModelData animatedModelData;
         Transformation transformation;
+        Transformation transformationOld;
 
         AnimatedModelEffect animatedModelEffect;
         LightMaterial lightMaterial;
@@ -64,6 +65,18 @@ namespace XNA_TPS.GameBase.Shapes
             set
             {
                 transformation = value;
+            }
+        }
+
+        public Transformation TransformationOld
+        {
+            get
+            {
+                return transformationOld;
+            }
+            set
+            {
+                transformationOld = value;
             }
         }
 

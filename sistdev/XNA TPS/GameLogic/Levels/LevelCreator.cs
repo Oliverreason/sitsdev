@@ -1,26 +1,28 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
+using System.Windows.Forms;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-using XNA_TPS.GameBase;
-using XNA_TPS.GameBase.Materials;
-using XNA_TPS.GameBase.Cameras;
-using XNA_TPS.GameBase.Lights;
-using XNA_TPS.GameBase.Shapes;
-using XNA_TPS.Helpers;
+using sistdev.GameBase;
+using sistdev.GameBase.Materials;
+using sistdev.GameBase.Cameras;
+using sistdev.GameBase.Lights;
+using sistdev.GameBase.Shapes;
+using sistdev.Helpers;
 
 
-namespace XNA_TPS.GameLogic.Levels
+namespace sistdev.GameLogic.Levels
 {
     public static class LevelCreator
     {
         public enum Levels
         {
-            AlienPlanet
+            Forest
         }
 
         public static GameLevel CreateLevel(Game game, Levels level)
@@ -32,17 +34,15 @@ namespace XNA_TPS.GameLogic.Levels
 
             switch (level)
             {
-                case Levels.AlienPlanet:
-                    return CreateAlienPlanetLevel(game);
-                    break;
+                case Levels.Forest:
+                    return CreateForestLevel(game);
 
                 default:
                     throw new ArgumentException("Invalid game level");
-                    break;
             }
         }
 
-        private static GameLevel CreateAlienPlanetLevel(Game game)
+        private static GameLevel CreateForestLevel(Game game)
         {
             ContentManager Content = game.Content;
             GameLevel gameLevel = new GameLevel();
@@ -84,20 +84,29 @@ namespace XNA_TPS.GameLogic.Levels
             gameLevel.SkyDome.TextureMaterial = GetTextureMaterial(game, "SkyDome", Vector2.One);
 
             // Player
-            gameLevel.Player = new Player(game, UnitTypes.PlayerType.Marine);
+            gameLevel.Player = new Player(game, UnitTypes.PlayerType.Frog);
             gameLevel.Player.Initialize();
-            gameLevel.Player.Transformation = new Transformation(new Vector3(-210, 0, 10),
-                new Vector3(0, 70, 0), Vector3.One);
-            gameLevel.Player.AnimatedModel.AnimationSpeed = 1.3f;
-            gameLevel.Player.AttachWeapon(UnitTypes.PlayerWeaponType.MachineGun);
+            gameLevel.Player.Transformation = new Transformation(new Vector3(50, 0, 50),
+                new Vector3(0, 0, 0), 2*Vector3.One);
+            gameLevel.Player.TransformationOld = gameLevel.Player.Transformation;
+            gameLevel.Player.AnimatedModel.AnimationSpeed = 1.0f;
 
             // Player chase camera offsets
             gameLevel.Player.ChaseOffsetPosition = new Vector3[2];
-            gameLevel.Player.ChaseOffsetPosition[0] = new Vector3(3.0f, 5.0f, 0.0f);
+            gameLevel.Player.ChaseOffsetPosition[0] = new Vector3(0.0f, 7.0f, -3.0f);
             gameLevel.Player.ChaseOffsetPosition[1] = new Vector3(3.0f, 4.0f, 0.0f);
 
             // Enemies
-            gameLevel.EnemyList = ScatterEnemies(game, 2, 150, 800, gameLevel.Player);
+            gameLevel.EnemyList = ScatterEnemies(game, 10, 50, 200, gameLevel.Player);
+
+            // Mosquitos
+            gameLevel.MosquitoList = ScatterMosquitos(game, 15, 10, 300, gameLevel.Player);
+
+            // StaticUnits
+            //gameLevel.StaticUnitList = ScatterStaticUnits(game, 10, 50, 300, gameLevel.Player);
+            gameLevel.StaticUnitList = PlaceStaticUnits(game, "Forest");
+
+            gameLevel.Bound2D = ReadBounding2D("Forest");
 
             return gameLevel;
         }
@@ -142,13 +151,155 @@ namespace XNA_TPS.GameLogic.Levels
                     offset = RandomHelper.GeneratePositionXZ(distance);
 
                 enemy.Transformation = new Transformation(player.Transformation.Translate +
-                    offset, Vector3.Zero, Vector3.One);
+                    offset, Vector3.Zero, /*Vector3.One*/ new Vector3((float)0.3, (float)0.3, (float)0.3));
+                enemy.TransformationOld = enemy.Transformation;
 
                 enemy.Player = player;
                 enemyList.Add(enemy);
             }
 
             return enemyList;
+        }
+
+        private static List<Mosquito> ScatterMosquitos(Game game, int numMosquitos,
+            float minDistance, int distance, Player player)
+        {
+            List<Mosquito> mosquitoList = new List<Mosquito>();
+
+            for (int i = 0; i < numMosquitos; i++)
+            {
+                Mosquito mosquito = new Mosquito(game, UnitTypes.MosquitoType.Mosquito);
+                mosquito.Initialize();
+
+                // Generate a random position
+                Vector3 offset = RandomHelper.GeneratePositionXZ(distance);
+                while (Math.Abs(offset.X) < minDistance && Math.Abs(offset.Z) < minDistance)
+                    offset = RandomHelper.GeneratePositionXZ(distance);
+
+                mosquito.Transformation = new Transformation(player.Transformation.Translate +
+                    offset, Vector3.Zero, /*Vector3.One*/ new Vector3((float)1, (float)1, (float)1));
+                mosquito.TransformationOld = mosquito.Transformation;
+
+                mosquitoList.Add(mosquito);
+            }
+
+            return mosquitoList;
+        }
+
+        private static List<StaticUnit> ScatterStaticUnits(Game game, int numStatUnits,
+            float minDistance, int distance, Player player)
+        {
+            List<StaticUnit> statUnitList = new List<StaticUnit>();
+
+            for (int i = 0; i < numStatUnits; i++)
+            {
+                StaticUnit statUnit = new StaticUnit(game, UnitTypes.StaticUnitType.Tree);
+                statUnit.Initialize();
+
+                // Generate a random position
+                Vector3 offset = RandomHelper.GeneratePositionXZ(distance);
+                while (Math.Abs(offset.X) < minDistance && Math.Abs(offset.Z) < minDistance)
+                    offset = RandomHelper.GeneratePositionXZ(distance);
+
+                statUnit.Transformation = new Transformation(player.Transformation.Translate +
+                    offset, Vector3.Zero, Vector3.One);
+
+                statUnitList.Add(statUnit);
+            }
+
+            return statUnitList;
+        }
+
+        private static List<StaticUnit> PlaceStaticUnits(Game game, String LevelName)
+        {
+            List<StaticUnit> statUnitList = new List<StaticUnit>();
+
+            FileStream levelStaticUnitsFS = new FileStream("Content/" + GameAssetsPath.LEVELS_PATH + LevelName + "/StaticUnits.list", FileMode.Open, FileAccess.Read);
+            StreamReader levelStaticUnitsSR = new StreamReader(levelStaticUnitsFS);
+
+            String str;
+            while ((str = levelStaticUnitsSR.ReadLine()) != null)
+            {
+                if (str[0] == '#')
+                {
+                    //MessageBox.Show("Comment");
+                    continue;
+                }
+
+                String [] strElems = str.Split(";".ToCharArray());
+                Int32 type = Int32.Parse(strElems[0]);
+                Int32 posX = Int32.Parse(strElems[1]);
+                Int32 posZ = Int32.Parse(strElems[2]);
+                Int32 width = Int32.Parse(strElems[3]);
+                Int32 height = Int32.Parse(strElems[4]);
+
+                //MessageBox.Show(type + " " + posX + " " + posY + " " + width + " " + height);
+
+                StaticUnit statUnit = new StaticUnit(game, UnitTypes.StaticUnitType.Tree);
+                statUnit.Initialize();
+                statUnit.Transformation = new Transformation(new Vector3(posX, 0, posZ), Vector3.Zero, Vector3.One);
+
+                statUnitList.Add(statUnit);
+            }
+
+            /*for (int i = 0; i < numStatUnits; i++)
+            {
+                StaticUnit statUnit = new StaticUnit(game, UnitTypes.StaticUnitType.Tree);
+                statUnit.Initialize();
+
+                // Generate a random position
+                Vector3 offset = RandomHelper.GeneratePositionXZ(distance);
+                while (Math.Abs(offset.X) < minDistance && Math.Abs(offset.Z) < minDistance)
+                    offset = RandomHelper.GeneratePositionXZ(distance);
+
+                statUnit.Transformation = new Transformation(player.Transformation.Translate +
+                    offset, Vector3.Zero, Vector3.One);
+
+                statUnitList.Add(statUnit);
+            }*/
+
+            return statUnitList;
+        }
+
+        private static List<Bounding2D> ReadBounding2D(String LevelName)
+        {
+            List<Bounding2D> Bounding2DList = new List<Bounding2D>();
+
+            FileStream levelBounding2DFS = new FileStream("Content/" + GameAssetsPath.LEVELS_PATH + LevelName + "/Bounding2D.list", FileMode.Open, FileAccess.Read);
+            StreamReader levelBounding2DSR = new StreamReader(levelBounding2DFS);
+
+            String str;
+            while ((str = levelBounding2DSR.ReadLine()) != null)
+            {
+                if (str[0] == '#')
+                {
+                    continue;
+                }
+
+                String[] strElems = str.Split(";".ToCharArray());
+                Int32 type = Int32.Parse(strElems[0]);
+                Int32 par1 = 0;
+                Int32 par2 = 0;
+                Int32 par3 = 0;
+                Int32 par4 = 0;
+                if (type == 0 || type == 1)
+                {
+                    par1 = Int32.Parse(strElems[1]);
+                    par2 = Int32.Parse(strElems[2]);
+                    par3 = Int32.Parse(strElems[3]);
+                }
+                if (type == 1)
+                {
+                    par4 = Int32.Parse(strElems[4]);
+                }
+
+                //MessageBox.Show(type + " " + par1 + " " + par2 + " " + par3 + " " + par4);
+
+                Bounding2D bound2D = new Bounding2D(type, par1, par2, par3, par4);
+                Bounding2DList.Add(bound2D);
+            }
+
+            return Bounding2DList;
         }
     }
 }

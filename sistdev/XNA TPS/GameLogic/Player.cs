@@ -4,9 +4,9 @@ using System.Text;
 
 using Microsoft.Xna.Framework;
 
-using XNA_TPS.GameBase.Cameras;
+using sistdev.GameBase.Cameras;
 
-namespace XNA_TPS.GameLogic
+namespace sistdev.GameLogic
 {
     public class Player : TerrainUnit
     {
@@ -24,8 +24,6 @@ namespace XNA_TPS.GameLogic
 
         // Player type
         UnitTypes.PlayerType playerType;
-        // Player weapon
-        PlayerWeapon playerWeapon;
         // Camera chase position
         Vector3[] chaseOffsetPosition;
         // Rotate torso bone
@@ -55,14 +53,6 @@ namespace XNA_TPS.GameLogic
             }
         }
 
-        public PlayerWeapon Weapon
-        {
-            get
-            {
-                return playerWeapon;
-            }
-        }
-
         public float RotateWaist
         {
             get
@@ -75,7 +65,8 @@ namespace XNA_TPS.GameLogic
 
                 // Rotate torso bone
                 Matrix rotate = Matrix.CreateRotationZ(rotateWaistBone);
-                AnimatedModel.BonesTransform[WAIST_BONE_ID] = rotate;
+                // TEMP Changes comment
+                //AnimatedModel.BonesTransform[WAIST_BONE_ID] = rotate;
             }
         }
 
@@ -106,23 +97,18 @@ namespace XNA_TPS.GameLogic
             Life = UnitTypes.PlayerLife[(int)playerType];
             MaxLife = Life;
             Speed = UnitTypes.PlayerSpeed[(int)playerType];
-
+            //Transformation. = Transformation.Rotate + new Vector3(0,110,0);
+            Transformation.Rotate = Transformation.Rotate;// +new Vector3(0, 180, 0);
             needUpdateChasePosition = true;
-
             SetAnimation(Player.PlayerAnimations.Idle, false, true, false);
 
             base.LoadContent();
         }
 
-        public void AttachWeapon(UnitTypes.PlayerWeaponType weaponType)
-        {
-            playerWeapon = new PlayerWeapon(Game, weaponType);
-            playerWeapon.Initialize();
-        }
-
         public void SetAnimation(PlayerAnimations animation, bool reset, bool enableLoop, bool waitFinish)
         {
-            SetAnimation((int)animation, reset, enableLoop, waitFinish);
+            // TEMP Changes - only one animation
+            SetAnimation(0*(int)animation, reset, enableLoop, waitFinish);
         }
 
         private void UpdateChasePosition()
@@ -156,27 +142,34 @@ namespace XNA_TPS.GameLogic
 
                 // Rotate torso bone
                 Matrix rotate = Matrix.CreateRotationZ(rotateWaistBone);
-                AnimatedModel.BonesTransform[WAIST_BONE_ID] = rotate;
+                // TEMP Changes comment
+                //AnimatedModel.BonesTransform[WAIST_BONE_ID] = rotate;
             }
         }
 
         public override void Update(GameTime time)
         {
             float elapsedTimeSeconds = (float)time.ElapsedGameTime.TotalSeconds;
-            UpdateWaistBone(elapsedTimeSeconds);
+            //UpdateWaistBone(elapsedTimeSeconds);
 
+            //Transformation.Translate = new Vector3(123, 0, 123);
+//            Transformation.Rotate = new Vector3(180, 0, 0);
+            
             base.Update(time);
+
             /*if ((cameraManager.ActiveCamera as ThirdPersonCamera).NeedFolow) */UpdateChasePosition();
 
             // Update player weapon
-            Matrix transformedHand = AnimatedModel.BonesAnimation[RIGHT_HAND_BONE_ID] * Transformation.Matrix;
+            // TEMP Changes - commented
+            /*Matrix transformedHand = AnimatedModel.BonesAnimation[RIGHT_HAND_BONE_ID] * Transformation.Matrix;
             playerWeapon.TargetDirection = HeadingVector + UpVector * rotateWaistBone;
-            playerWeapon.Update(time, transformedHand);
+            playerWeapon.Update(time, transformedHand);*/
         }
 
         public override void Draw(GameTime time)
         {
-            playerWeapon.Draw(time);
+            // TEMP Changes - no weapon
+            //playerWeapon.Draw(time);
 
             base.Draw(time);
         }
